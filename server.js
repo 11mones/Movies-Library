@@ -23,6 +23,12 @@ let arr = [];
 res.json(arr);
  
 }
+app.get('*', errHandler) ;
+function errHandler(req,res){
+
+    res.send("404 ERROR not found");
+ 
+}
 
 
 function movieCon(title , poster , overview){
