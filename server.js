@@ -1,4 +1,11 @@
+ Lab13
 
+
+Lab12
+//aaaaaa
+
+'use stict'
+main
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -151,3 +158,4 @@ app.use(function (err, req, res, next) {
 app.listen(PORT, () => {
     console.log(`the server is listening to port ${PORT}`);
 })
+main
