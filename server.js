@@ -1,11 +1,4 @@
- Lab13
 
-
-Lab12
-//aaaaaa
-
-'use stict'
-main
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -13,6 +6,14 @@ require('dotenv').config();
 const app = express()
 const movieData = require('./data.json');
 app.use(cors());
+const { Client } = require('pg')
+const url = process.env.url;
+var bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+const client = new Client(url)
 const PORT = process.env.PORT;
 const apiKey = process.env.API_KEY
 
@@ -57,6 +58,12 @@ app.get('/trending', trendingPageHandler);
 app.get('/search', searchHandler);
 app.get('/popular', popularHandler);
 app.get('/top-rated-tv-shows', tvShowsHandler);
+
+
+
+app.post('/addMovie', addToDatabaseHandler);
+app.get('/getMovies', getFromDatabaseHandler);
+
 app.get('*', handleNotFoundErr);
 
 
@@ -137,6 +144,31 @@ function homePageHandler(req, res) {
     result.push(newMovie);
     res.send(result);
 }
+//setting data into database
+function addToDatabaseHandler(req, res) {
+    let  {title,overview,img,comment} = req.body;
+    let sql = `INSERT INTO moviesToWatch (title, overview, img, comment)
+    VALUES ($1, $2, $3, $4) RETURNING *;`
+    let values = [title,overview,img,comment];
+    client.query(sql,values).then((result)=>{
+        res.status(201).json(result.rows);
+    }).catch()
+    
+      
+}
+
+function getFromDatabaseHandler(req, res) {
+   
+    let sql = `SELECT title, overview,img,comment
+    FROM moviesToWatch;`
+   
+    client.query(sql).then((result)=>{
+        res.json(result.rows);
+    }).catch()
+    
+      
+}
+
 
 //Handle 404 Error
 function handleNotFoundErr(req, res) {
@@ -155,7 +187,7 @@ app.use(function (err, req, res, next) {
 
 
 //run the server and make it listen all the time to port 3000
-app.listen(PORT, () => {
+client.connect()
+.then(app.listen(PORT, () => {
     console.log(`the server is listening to port ${PORT}`);
-})
-main
+})).catch()
