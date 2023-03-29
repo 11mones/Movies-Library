@@ -7,7 +7,7 @@ const app = express()
 const movieData = require('./data.json');
 app.use(cors());
 const { Client } = require('pg')
-let url = `postgress://swmones:1142@localhost:5432/movies`;
+const url = process.env.url;
 var bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }))
 
