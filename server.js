@@ -60,9 +60,16 @@ app.get('/popular', popularHandler);
 app.get('/top-rated-tv-shows', tvShowsHandler);
 
 
-
+//body routes
 app.post('/addMovie', addToDatabaseHandler);
 app.get('/getMovies', getFromDatabaseHandler);
+//params routes
+app.put('/UPDATE/:id', updateCommentHandler);
+app.delete('/DELETE/:id', deleteMovieHandler);
+app.get('/getMovie/:id', getMovieHandler);
+
+
+
 
 app.get('*', handleNotFoundErr);
 
@@ -169,6 +176,41 @@ function getFromDatabaseHandler(req, res) {
       
 }
 
+function updateCommentHandler(req,res){
+    let movieName = req.params.id // params
+    let {title,overview,img,comment} = req.body;
+    let sql=`UPDATE moviesToWatch SET title = $1, overview = $2, img=$3 ,comment =$4
+    WHERE title = $5 RETURNING *;`;
+    let values = [title,overview,img,comment,movieName];
+    client.query(sql,values).then(result=>{
+        console.log(result.rows);
+        res.send(result.rows);
+    }).catch()
+}
+
+function deleteMovieHandler (req,res){
+
+    let {id} = req.params; //destructuring
+    let sql=`DELETE FROM moviesToWatch WHERE title = $1;` ;
+    let value = [id];
+    client.query(sql,value).then(result=>{
+        res.status(204).send("deleted");
+    }).catch()
+}
+
+function getMovieHandler (req,res){
+
+    let {id} = req.params; //destructuring
+    let sql=`SELECT *
+    FROM moviesToWatch
+    WHERE title = $1;` ;
+    let value = [id];
+    client.query(sql,value).then(result=>{
+        res.send(result.rows);
+    }).catch()
+
+
+}
 
 //Handle 404 Error
 function handleNotFoundErr(req, res) {
