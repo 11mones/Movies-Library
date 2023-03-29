@@ -59,6 +59,8 @@ app.get('/search', searchHandler);
 app.get('/popular', popularHandler);
 app.get('/top-rated-tv-shows', tvShowsHandler);
 
+
+
 app.post('/addMovie', addToDatabaseHandler);
 app.get('/getMovies', getFromDatabaseHandler);
 
